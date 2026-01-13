@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐰</text></svg>">
     <title>Rabbit</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐰</text></svg>">
+
     <style>
+        /* --- CSS STYLES --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdfbf7;
             display: flex;
             justify-content: center;
             padding-top: 50px;
             color: #4a4a4a;
+            padding-bottom: 50px;
         }
 
         .container {
@@ -24,7 +29,7 @@
         }
 
         h1 { text-align: center; margin-bottom: 5px; color: #333; }
-        .subtitle { text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 25px; }
+        .subtitle { text-align: center; color: #888; font-size: 0.9rem; margin-bottom: 25px; font-style: italic;}
 
         .status-box {
             text-align: center;
@@ -105,15 +110,15 @@
 
 <div class="container">
     <h1>Rabbit 🐰</h1>
-    <p class="subtitle">Wer zwei Hasen jagt, fängt keinen.</p>
+    <p class="subtitle">„Wer zwei Hasen jagt, fängt keinen.“</p>
 
     <div id="status-display" class="status-box status-unlocked">
-        Loading...
+        Laden...
     </div>
 
     <div class="input-group">
-        <input type="text" id="habit-input" placeholder="New habit (e.g. Read 10 pages)">
-        <button id="add-btn" class="btn-active">Add</button>
+        <input type="text" id="habit-input" placeholder="Neue Gewohnheit (z.B. 10 Seiten lesen)">
+        <button id="add-btn" class="btn-active">Start</button>
     </div>
 
     <ul id="habit-list"></ul>
@@ -150,7 +155,6 @@
         const now = new Date();
         
         const actualDays = Math.floor((now - start) / (1000 * 60 * 60 * 24)) + 1;
-
         const effectiveDays = Math.max(MIN_DAYS, actualDays);
         
         let percent = (habit.completions / effectiveDays) * 100;
@@ -168,39 +172,37 @@
         const globalEff = getGlobalEfficiency();
         
         const isLocked = globalEff < PASS_THRESHOLD && habits.length > 0;
-
         if (isLocked) {
             statusBox.className = "status-box status-locked";
-            statusBox.innerHTML = `🔒 LOCKED<br><small>Efficiency: ${globalEff}% (Target: ${PASS_THRESHOLD}%)</small>`;
+            statusBox.innerHTML = `🔒 GESPERRT<br><small>Effizienz: ${globalEff}% (Ziel: ${PASS_THRESHOLD}%)</small>`;
             inputEl.disabled = true;
-            inputEl.placeholder = "Improve efficiency to unlock...";
+            inputEl.placeholder = "Erst Aufgaben erledigen...";
             addBtn.className = "btn-locked";
-            addBtn.innerText = "Locked";
+            addBtn.innerText = "Gesperrt";
         } else {
             statusBox.className = "status-box status-unlocked";
-            statusBox.innerHTML = `🔓 UNLOCKED<br><small>Efficiency: ${globalEff}%</small>`;
+            statusBox.innerHTML = `🔓 OFFEN<br><small>Effizienz: ${globalEff}%</small>`;
             inputEl.disabled = false;
-            inputEl.placeholder = "New habit name...";
+            inputEl.placeholder = "Neue Gewohnheit...";
             addBtn.className = "btn-active";
-            addBtn.innerText = "Add";
+            addBtn.innerText = "Start";
         }
 
         habits.forEach((habit, index) => {
             const eff = getHabitEfficiency(habit);
             const colorClass = eff >= PASS_THRESHOLD ? 'high-eff' : 'low-eff';
             
-            // Calculate days for display info
             const start = new Date(habit.createdAt);
             const now = new Date();
             const daysAlive = Math.floor((now - start) / (1000 * 60 * 60 * 24)) + 1;
-            const warmupMsg = daysAlive < MIN_DAYS ? `(Warmup: Day ${daysAlive}/${MIN_DAYS})` : "";
+            const warmupMsg = daysAlive < MIN_DAYS ? `(Aufwärmphase: Tag ${daysAlive}/${MIN_DAYS})` : "";
 
             const li = document.createElement('li');
             li.className = 'habit-item';
             li.innerHTML = `
                 <div class="habit-info">
                     <h4>${habit.name}</h4>
-                    <span class="habit-stats ${colorClass}">${eff}% Efficiency</span> 
+                    <span class="habit-stats ${colorClass}">${eff}% Effizienz</span> 
                     <span class="habit-stats" style="font-size:0.7em; color:#ccc;"> ${warmupMsg}</span>
                 </div>
                 <div class="actions">
@@ -214,8 +216,9 @@
 
     function addHabit() {
         if (inputEl.value.trim() === '') return;
+        
         if (getGlobalEfficiency() < PASS_THRESHOLD && habits.length > 0) {
-            alert("Finish your current habits first!");
+            alert("Erledige erst deine aktuellen Aufgaben!");
             return;
         }
 
@@ -237,7 +240,7 @@
     }
 
     function deleteHabit(index) {
-        if(confirm("Delete this Rabbit?")) {
+        if(confirm("Wirklich löschen?")) {
             habits.splice(index, 1);
             saveAndRender();
         }

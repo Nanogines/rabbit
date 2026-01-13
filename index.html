@@ -121,8 +121,8 @@
 
 <script>
 
-    const MIN_DAYS = 3; // The "Warm-up" period. Divisor will never be lower than this.
-    const PASS_THRESHOLD = 80; // Percent needed to unlock
+    const MIN_DAYS = 3;
+    const PASS_THRESHOLD = 80;
 
     let habits = JSON.parse(localStorage.getItem('rabbitData')) || [];
 
@@ -135,13 +135,8 @@
         const start = new Date(habit.createdAt);
         const now = new Date();
         
-        // True days passed
         const actualDays = Math.floor((now - start) / (1000 * 60 * 60 * 24)) + 1;
-        
-        // EFFECTIVE DAYS: We force the divisor to be at least MIN_DAYS (3).
-        // This prevents 100% efficiency on Day 1.
-        // Day 1: Divisor is 3. Max score = 33%.
-        // Day 4: Divisor is 4. Max score = 100%.
+
         const effectiveDays = Math.max(MIN_DAYS, actualDays);
         
         let percent = (habit.completions / effectiveDays) * 100;
